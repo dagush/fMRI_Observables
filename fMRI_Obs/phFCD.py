@@ -15,7 +15,7 @@
 import warnings
 import numpy as np
 from scipy import signal, stats
-import WholeBrain.Observables.PhaseInteractionMatrix as PhaseInteractionMatrix
+import PhaseInteractionMatrix
 
 print("Going to use Phase Functional Connectivity Dynamics (phFCD)...")
 
