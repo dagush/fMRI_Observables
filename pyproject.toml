@@ -8,9 +8,9 @@ version = "1.0.0"
 authors = [
   { name="Gustavo Patow", email="gustavo.patow@udg.edu" },
 ]
-description = "fMRI Obervable spackage"
+description = "fMRI Observables spackage"
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.5"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
