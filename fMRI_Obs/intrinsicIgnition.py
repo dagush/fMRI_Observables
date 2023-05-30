@@ -37,8 +37,8 @@ from scipy import signal
 # from scipy.optimize import curve_fit
 from numba import jit
 
-from Observables import BOLDFilters
-from WholeBrain.Utils import demean
+import BOLDFilters
+import demean
 # import WholeBrain.Observables.Integration as Integration
 
 # ==================================

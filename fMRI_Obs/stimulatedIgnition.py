@@ -19,7 +19,6 @@ import numpy as np
 import scipy.io as sio
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
-from WholeBrain.Utils.decorators import loadOrCompute
 
 print("Going to use Stimulated Ignition...")
 
@@ -193,7 +192,7 @@ def setupStimulation(seed, perturb):
     stim.amp = perturb
 
 
-@loadOrCompute
+# @loadOrCompute
 def simulateTrials(numTrials, N, PERTURB, seed):
     neuro_act = np.zeros((numTrials, Tmaxneuronal+1, N))
     neuro_actf = np.zeros((int(Tmaxneuronal/20), N))

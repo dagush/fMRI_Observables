@@ -8,8 +8,8 @@
 #--------------------------------------------------------------------------
 import numpy as np
 # from numba import jit
-from Observables import BOLDFilters
-import WholeBrain.Observables.FC as FC
+import BOLDFilters
+import FC
 
 print("Going to use Global Brain Connectivity (GBC)...")
 

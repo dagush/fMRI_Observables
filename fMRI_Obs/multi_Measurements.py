@@ -4,7 +4,7 @@
 # --------------------------------------------------------------------------------------
 import numpy as np
 from scipy import signal, stats
-from WholeBrain.Utils import demean
+import demean
 
 print("Going to use multi-measurement metrics...")
 

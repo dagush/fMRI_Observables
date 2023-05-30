@@ -21,7 +21,7 @@ import warnings
 import numpy as np
 from scipy import signal, stats
 # from scipy import stats
-from WholeBrain.Utils import demean
+import demean
 
 import WholeBrain.Observables.PhaseInteractionMatrix as PhaseInteractionMatrix
 

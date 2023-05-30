@@ -8,7 +8,7 @@
 import warnings
 import numpy as np
 from scipy.signal import butter, detrend, filtfilt
-from WholeBrain.Utils import demean
+import demean
 from scipy import signal
 # from numba import jit
 

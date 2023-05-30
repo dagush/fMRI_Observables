@@ -23,8 +23,8 @@ import warnings
 import numpy as np
 from scipy import signal, stats
 # from scipy import stats
-from Observables import BOLDFilters
-from WholeBrain.Utils import demean
+import BOLDFilters
+import demean
 
 print("Going to use Phase-Interaction Matrix...")
 

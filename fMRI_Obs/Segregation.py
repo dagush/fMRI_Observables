@@ -7,11 +7,11 @@
 import warnings
 import numpy as np
 import copy as cp
-from WholeBrain.Utils.iGraphTools import Array2iGraph
+from iGraphTools import Array2iGraph
 
 import leidenalg as leiden
 
-import WholeBrain.Observables.PhaseInteractionMatrix as PhaseInteractionMatrix
+import PhaseInteractionMatrix
 
 print("Going to use Segregation...")
 
