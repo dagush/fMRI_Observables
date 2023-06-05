@@ -60,18 +60,18 @@ def from_fMRI(ts, applyFilters=True, removeStrongArtefacts=True):  # Compute the
     npattmax = Tmax - (2*discardOffset-1)  # calculates the size of phfcd matrix
 
     if not np.isnan(ts).any():  # No problems, go ahead!!!
+        # Filters seem to be always applied...
+        if applyFilters:
+            ts_filt = BOLDFilters.BandPassFilter(ts, removeStrongArtefacts=removeStrongArtefacts)  # zero phase filter the data
+        else:
+            ts_filt = ts
+
         # Data structures we are going to need...
         phases = np.zeros((N, Tmax))
         dFC = np.zeros((N, N))
         # PhIntMatr = np.zeros((npattmax, int(N * (N - 1) / 2)))  # The int() is not needed, but... (see above)
         PhIntMatr = np.zeros((npattmax, N, N))
         # syncdata = np.zeros(npattmax)
-
-        # Filters seem to be always applied...
-        if applyFilters:
-            ts_filt = BOLDFilters.BandPassFilter(ts, removeStrongArtefacts=removeStrongArtefacts)  # zero phase filter the data
-        else:
-            ts_filt = ts
 
         for n in range(N):
             Xanalytic = signal.hilbert(demean.demean(ts_filt[n, :]))
