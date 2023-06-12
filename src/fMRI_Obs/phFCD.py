@@ -14,7 +14,7 @@
 # --------------------------------------------------------------------------
 import warnings
 import numpy as np
-from scipy import signal, stats
+from scipy import stats
 import PhaseInteractionMatrix
 
 print("Going to use Phase Functional Connectivity Dynamics (phFCD)...")

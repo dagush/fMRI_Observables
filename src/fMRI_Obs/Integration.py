@@ -22,9 +22,7 @@ the largest components of the graphs consecutively thresholding a FC matrix.
 """
 
 # Standard library imports
-from timeit import default_timer as timer
 # Third party libraries
-import matplotlib.pyplot as plt
 import numpy as np
 import warnings
 from galib.metrics_numba import FloydWarshall_Numba

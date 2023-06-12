@@ -35,7 +35,6 @@ from scipy import signal
 # import scipy.io as sio
 # import matplotlib.pyplot as plt
 # from scipy.optimize import curve_fit
-from numba import jit
 
 import BOLDFilters
 import demean

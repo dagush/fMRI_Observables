@@ -8,7 +8,6 @@
 #--------------------------------------------------------------------------
 import numpy as np
 # from numba import jit
-import BOLDFilters
 import FC
 
 print("Going to use Global Brain Connectivity (GBC)...")

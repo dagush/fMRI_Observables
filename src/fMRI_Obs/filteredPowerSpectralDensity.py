@@ -6,8 +6,6 @@
 #     # for a TR of 2s this is 0.249 Hz]
 # #--------------------------------------------------------------------------
 import numpy as np
-from scipy.signal import butter, detrend, filtfilt
-from scipy.stats import zscore
 import BOLDFilters
 
 

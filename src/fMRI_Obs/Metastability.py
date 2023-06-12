@@ -23,7 +23,7 @@
 # --------------------------------------------------------------------------
 import warnings
 import numpy as np
-from scipy import signal, stats
+from scipy import signal
 # from scipy import stats
 import BOLDFilters
 import demean
