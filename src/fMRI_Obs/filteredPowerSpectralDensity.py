@@ -6,7 +6,7 @@
 #     # for a TR of 2s this is 0.249 Hz]
 # #--------------------------------------------------------------------------
 import numpy as np
-import BOLDFilters
+from fMRI_Obs import BOLDFilters
 
 
 def conv(u,v):  # python equivalent to matlab conv 'same' method

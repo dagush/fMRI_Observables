@@ -36,8 +36,8 @@ from scipy import signal
 # import matplotlib.pyplot as plt
 # from scipy.optimize import curve_fit
 
-import BOLDFilters
-import demean
+from fMRI_Obs import BOLDFilters
+from fMRI_Obs import demean
 # import WholeBrain.Observables.Integration as Integration
 
 # ==================================

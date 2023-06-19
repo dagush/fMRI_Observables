@@ -8,7 +8,7 @@
 import warnings
 import numpy as np
 from scipy.signal import butter, detrend, filtfilt
-import demean
+from fMRI_Obs import demean
 from scipy import signal
 # from numba import jit
 

@@ -9,7 +9,7 @@
 # Refactored by Gustavo Patow
 #
 # --------------------------------------------------------------------------------------
-import BOLDFilters
+from fMRI_Obs import BOLDFilters
 
 print("Going to use Integration (from FC)...")
 
