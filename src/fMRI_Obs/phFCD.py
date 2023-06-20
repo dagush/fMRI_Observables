@@ -15,7 +15,7 @@
 import warnings
 import numpy as np
 from scipy import stats
-import PhaseInteractionMatrix
+from fMRI_Obs import PhaseInteractionMatrix
 
 print("Going to use Phase Functional Connectivity Dynamics (phFCD)...")
 
