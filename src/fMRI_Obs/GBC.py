@@ -8,7 +8,7 @@
 #--------------------------------------------------------------------------
 import numpy as np
 # from numba import jit
-import FC
+from fMRI_Obs import FC
 
 print("Going to use Global Brain Connectivity (GBC)...")
 

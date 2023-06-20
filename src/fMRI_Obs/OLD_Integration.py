@@ -19,9 +19,6 @@
 # component as a function of the threshold.
 import warnings
 import numpy as np
-from scipy import signal, stats
-# from scipy import stats
-import demean
 
 import WholeBrain.Observables.PhaseInteractionMatrix as PhaseInteractionMatrix
 

@@ -25,8 +25,8 @@ import warnings
 import numpy as np
 from scipy import signal
 # from scipy import stats
-import BOLDFilters
-import demean
+from fMRI_Obs import BOLDFilters
+from fMRI_Obs import demean
 
 print("Going to use Metastability (Kuramoto order parm)...")
 

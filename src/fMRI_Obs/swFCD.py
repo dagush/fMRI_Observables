@@ -9,7 +9,7 @@ import warnings
 import numpy as np
 # from numba import jit
 from scipy import stats
-import BOLDFilters
+from fMRI_Obs import BOLDFilters
 
 print("Going to use Sliding Windows Functional Connectivity Dynamics (swFCD)...")
 
