@@ -10,11 +10,14 @@
 #
 #  Translated to Python by Xenia Kobeleva
 #  Revised by Gustavo Patow
+#  Optimized by Facundo Roffet
 # --------------------------------------------------------------------------
 # --------------------------------------------------------------------------
 import warnings
 import numpy as np
-from scipy import stats
+from scipy import signal, stats
+from numba import jit
+
 from fMRI_Obs import PhaseInteractionMatrix
 
 print("Going to use Phase Functional Connectivity Dynamics (phFCD)...")
@@ -48,6 +51,25 @@ discardOffset = 10  # This was necessary in the old days when, after pre-process
 # done at the pre-processing stage itself, so this value is set to 0. Thus, depends on your data...
 
 
+# ==================================================================
+# buildFullMatrix: given the output of from_fMRI, this function
+# returns the full matrix. Not needed, except for plotting and such...
+# ==================================================================
+def buildFullMatrix(FCD_data):
+    LL = FCD_data.shape[0]
+    # T is size of the matrix given the length of the lower/upper triangular part (displaced by 1)
+    T = int((1. + np.sqrt(1. + 8. * LL)) / 2.)
+    fcd_mat = np.zeros((T, T))
+    fcd_mat[np.triu_indices(T, k=1)] = FCD_data
+    fcd_mat += fcd_mat.T
+    return fcd_mat
+
+
+# ==================================================================
+# tril_indices_column and triu_indices_column:
+# retrieve the lower/upper triangular part, but in column-major
+# order, needed for compatibility with Matlab code
+# ==================================================================
 def tril_indices_column(N, k=0):
     row_i, col_i = np.nonzero(
         np.tril(np.ones(N), k=k).T)  # Matlab works in column-major order, while Numpy works in row-major.
@@ -64,6 +86,39 @@ def triu_indices_column(N, k=0):
     return Isubdiag
 
 
+# ==================================================================
+# Computes the mean of the matrix
+# ==================================================================
+@jit(nopython=True)
+def mean(x, axis=None):
+    if axis == None:
+        return np.sum(x, axis) / np.prod(x.shape)
+    else:
+        return np.sum(x, axis) / x.shape[axis]
+
+
+# ==================================================================
+# numba_phFCD: convenience function to accelerate computations
+# ==================================================================
+@jit(nopython=True)
+def numba_phFCD(phIntMatr_upTri, npattmax, size_kk3):
+    phfcd = np.zeros((size_kk3))
+    kk3 = 0
+
+    for t in range(npattmax - 2):
+        p1_sum = np.sum(phIntMatr_upTri[t:t + 3, :], axis=0)
+        p1_norm = np.linalg.norm(p1_sum)
+        for t2 in range(t + 1, npattmax - 2):
+            p2_sum = np.sum(phIntMatr_upTri[t2:t2 + 3, :], axis=0)
+            p2_norm = np.linalg.norm(p2_sum)
+
+            dot_product = np.dot(p1_sum, p2_sum)
+            phfcd[kk3] = dot_product / (p1_norm * p2_norm)
+            kk3 += 1
+    return phfcd
+
+
+# ==================================================================
 # From [Deco2019]: Comparing empirical and simulated FCD.
 # For a single subject session where M time points were collected, the corresponding phase-coherence based
 # FCD matrix is defined as a MxM symmetric matrix whose (t1, t2) entry is defined by the cosine similarity
@@ -71,27 +126,20 @@ def triu_indices_column(N, k=0):
 # For 2 vectors p1 and p2, the cosine similarity is given by (p1.p2)/(||p1||||p2||).
 # Epochs of stable FC(t) configurations are reflected around the FCD diagonal in blocks of elevated
 # inter-FC(t) correlations.
+# ==================================================================
 def from_fMRI(ts, applyFilters=True, removeStrongArtefacts=True):  # Compute the FCD of an input BOLD signal
-    (N, Tmax) = ts.shape
-    npattmax = Tmax - (2*discardOffset-1)  # calculates the size of phfcd vector
-    size_kk3 = int((npattmax - 3) * (npattmax - 2) / 2)  # The int() is not needed because N*(N-1) is always even, but "it will produce an error in the future"...
-
-    Isubdiag = tril_indices_column(N, k=-1)  # Indices of triangular lower part of matrix
+    PhaseInteractionMatrix.discardOffset = discardOffset
     phIntMatr = PhaseInteractionMatrix.from_fMRI(ts, applyFilters=applyFilters,
                                                  removeStrongArtefacts=removeStrongArtefacts)  # Compute the Phase-Interaction Matrix
-
     if not np.isnan(phIntMatr).any():  # No problems, go ahead!!!
+        (N, Tmax) = ts.shape
+        npattmax = Tmax - (2 * discardOffset - 1)  # calculates the size of phfcd vector
+        size_kk3 = int((npattmax - 3) * (npattmax - 2) / 2)  # The int() is not needed because N*(N-1) is always even, but "it will produce an error in the future"...
+        Isubdiag = tril_indices_column(N, k=-1)  # Indices of triangular lower part of matrix
         phIntMatr_upTri = np.zeros((npattmax, int(N * (N - 1) / 2)))  # The int() is not needed, but... (see above)
         for t in range(npattmax):
             phIntMatr_upTri[t,:] = phIntMatr[t][Isubdiag]
-        phfcd = np.zeros((size_kk3))
-        kk3 = 0
-        for t in range(npattmax - 2):
-            p1 = np.mean(phIntMatr_upTri[t:t + 3, :], axis=0)
-            for t2 in range(t + 1, npattmax - 2):
-                p2 = np.mean(phIntMatr_upTri[t2:t2 + 3, :], axis=0)
-                phfcd[kk3] = np.dot(p1, p2) / np.linalg.norm(p1) / np.linalg.norm(p2)  # this (phFCD) what I want to get
-                kk3 = kk3 + 1
+        phfcd = numba_phFCD(phIntMatr_upTri, npattmax, size_kk3,)
     else:
         warnings.warn('############ Warning!!! phFCD.from_fMRI: NAN found ############')
         phfcd = np.array([np.nan])
@@ -140,6 +188,35 @@ def postprocess(FCDs):
 def findMinMax(arrayValues):
     return np.min(arrayValues), np.argmin(arrayValues)
 
+
+# --------------------------------------------------------------------------------------
+# Test code
+# --------------------------------------------------------------------------------------
+if __name__ == '__main__':
+    import scipy.io as sio
+    import matplotlib.pyplot as plt
+
+    from fMRI_Obs import BOLDFilters
+    BOLDFilters.flp = 0.008
+    BOLDFilters.fhi = 0.08
+    BOLDFilters.TR = 3
+
+    inFilePath = "../../Data_Raw/"
+    allData = sio.loadmat(inFilePath + 'all_SC_FC_TC_76_90_116.mat')
+    sc90 = allData['sc90']
+    C = sc90 / np.max(sc90[:]) * 0.2  # Normalization...
+    ts90 = allData['tc90symm_s0004']
+
+    # plt.plot(ts90)
+    # plt.show()
+
+    discardOffset = 0
+    fcd = from_fMRI(ts90)
+    full_fcd = buildFullMatrix(fcd)
+    plt.imshow(full_fcd)
+    plt.show()
+
+    print('test done!')
 # ================================================================================================================
 # ================================================================================================================
 # ================================================================================================================EOF
